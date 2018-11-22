@@ -1,4 +1,5 @@
-///<reference path="./node_modules/@types/three/index.d.ts"/>
+import * as THREE from "three";
+import "./node_modules/three/examples/js/controls/OrbitControls.js";
 
 class ThreeJSTest {
     private scene: THREE.Scene;

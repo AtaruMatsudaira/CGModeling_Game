@@ -4,16 +4,42 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "label": "tsc",
-            "problemMatcher": [
-                "$tsc"
-            ],
+            "type": "npm",
+            "script": "start",
+            "label": "npm start",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": {
+                "owner": "typescript",
+                "pattern": {
+                    "regexp": "_____"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Compiling\\.\\.\\.$",
+                    "endsPattern": "Compiled"
+                }
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build",
+            "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "npm",
+            "script": "install",
+            "problemMatcher": []
         }
     ]
 }
