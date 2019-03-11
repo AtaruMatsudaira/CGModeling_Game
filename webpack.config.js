@@ -1,10 +1,11 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
-    entry: './app.ts',
+    entry: path.resolve(__dirname, 'src', 'app.ts'),
     output: {
-        path: path.resolve(__dirname, ''),
+        path: path.resolve(__dirname, 'dist'),
         filename: 'app.js',
     },
     module: {
@@ -20,7 +21,22 @@ module.exports = {
                 ],
                 use: 'imports-loader?THREE=three',
             },
+            {
+                test: /\.(vs|fs|txt)$/,
+                include: [
+                    path.resolve(__dirname, "src"),
+                ],
+                use: 'raw-loader',
+            },
         ],
     },
-    devtool: 'source-map',
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, 'src', 'index.html'),
+        })
+    ],
+    devServer: {
+        contentBase: path.resolve(__dirname, 'dist'),
+        port: 8080,
+    },
 }

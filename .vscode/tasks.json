@@ -6,7 +6,7 @@
         {
             "type": "npm",
             "script": "start",
-            "label": "npm start",
+            "label": "npm: start",
             "isBackground": true,
             "presentation": {
                 "echo": true,
@@ -25,21 +25,39 @@
                     "beginsPattern": "Compiling\\.\\.\\.$",
                     "endsPattern": "Compiled"
                 }
-            }
+            },
+            "dependsOn": [
+                "npm: testrun"
+            ],
         },
         {
             "type": "npm",
             "script": "build",
-            "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": [],
         },
         {
             "type": "npm",
-            "script": "install",
-            "problemMatcher": []
+            "script": "testrun",
+            "problemMatcher": [],
+        },
+        {
+            "type": "npm",
+            "label": "npm: install",
+            "problemMatcher": [],
+            "dependsOn": [
+                "npm: link"
+            ],
+            "script": "install"
+        },
+        {
+            "type": "shell",
+            "label": "npm: link",
+            "command": "npm link typescript ts-loader imports-loader raw-loader html-webpack-plugin",
+            "problemMatcher": [],
         }
     ]
 }
