@@ -1,9 +1,6 @@
 import * as THREE from "three";
 import "three/examples/js/controls/OrbitControls";
 
-import Sample from "./Sample"
-console.log(new Sample().name);
-
 declare function require(name:string);
 
 class ThreeJSContainer {
