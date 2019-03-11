@@ -16,6 +16,7 @@ class ThreeJSContainer {
         this.createScene();
     }
 
+    // 画面部分の作成(表示する枠ごとに)
     public createRendererDOM = (width = 640, height = 480, cameraPos = new THREE.Vector3(3, 3, 3)) => {
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(width, height);
@@ -27,23 +28,28 @@ class ThreeJSContainer {
 
         const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        const update = () => {
+        // 毎フレームのupdateを呼んで，render
+        // reqest... により次フレームを呼ぶ
+        const render = () => {
             orbitControls.update();
-            renderer.render(this.scene, camera);
 
-            requestAnimationFrame(update);
+            renderer.render(this.scene, camera);
+            requestAnimationFrame(render);
         }
-        update();
+        render();
 
         renderer.domElement.style.cssFloat = "left";
         renderer.domElement.style.margin = "10px";
         return renderer.domElement;
     }
 
+    // シーンの作成(全体で1回)
     private createScene = () => {
         this.scene = new THREE.Scene();
+
         this.geometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
 
+        // requireにより，サーバーサイド読み込み
         const vert = <string>require("./vertex.vs");
         const frag = <string>require("./fragment.fs");
         this.uniforms = [];
@@ -59,6 +65,16 @@ class ThreeJSContainer {
         var lvec = new THREE.Vector3(1, 1, 1).normalize();
         this.light.position.set(lvec.x, lvec.y, lvec.z);
         this.scene.add(this.light);
+
+
+        // 毎フレームのupdateを呼んで，更新
+        // reqest... により次フレームを呼ぶ
+        const update = () => {
+            this.torus.rotateX(0.01);
+
+            requestAnimationFrame(update);
+        }
+        update();
     }
 }
 
