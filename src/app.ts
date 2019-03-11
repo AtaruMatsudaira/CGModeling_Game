@@ -1,35 +1,46 @@
 import * as THREE from "three";
 import "three/examples/js/controls/OrbitControls";
 
+import Sample from "./Sample"
+console.log(new Sample().name);
+
 declare function require(name:string);
 
-class ThreeJSTest {
+class ThreeJSContainer {
     private scene: THREE.Scene;
-    private camera: THREE.Camera;
-    private renderer: THREE.WebGLRenderer;
     private geometry: THREE.Geometry;
     private material: THREE.MeshNormalMaterial;
     private cube: THREE.Mesh;
     private light: THREE.Light;
-    private screenWidth: number = 640;
-    private screenHeight: number = 480;
     private torus: THREE.Mesh;
     private uniforms: THREE.Uniform[];
 
-    private orbitControls: THREE.OrbitControls;
-
     constructor() {
-        this.createRenderer();
         this.createScene();
     }
 
-    get domElement() { return this.renderer.domElement; }
+    public createRendererDOM = (width = 640, height = 480, cameraPos = new THREE.Vector3(3, 3, 3)) => {
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(width, height);
+        renderer.setClearColor(new THREE.Color(0x495ed));
 
-    private createRenderer = () => {
-        this.renderer = new THREE.WebGLRenderer();
-        this.renderer.setSize(this.screenWidth, this.screenHeight);
-        this.renderer.setClearColor(new THREE.Color(0x495ed));
-        document.getElementById("viewport").appendChild(this.renderer.domElement);
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        camera.position.copy(cameraPos);
+        camera.lookAt(new THREE.Vector3(0,0,0));
+
+        const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        const update = () => {
+            orbitControls.update();
+            renderer.render(this.scene, camera);
+
+            requestAnimationFrame(update);
+        }
+        update();
+
+        renderer.domElement.style.cssFloat = "left";
+        renderer.domElement.style.margin = "10px";
+        return renderer.domElement;
     }
 
     private createScene = () => {
@@ -47,27 +58,14 @@ class ThreeJSTest {
 
         this.torus = new THREE.Mesh(this.geometry, this.material);
         this.scene.add(this.torus);
-        this.camera = new THREE.PerspectiveCamera(75, this.screenWidth /  this.screenHeight, 0.1, 1000);
-        this.camera.position.set(3, 3, 3);
-        this.camera.lookAt(new THREE.Vector3(0,0,0));
         this.light = new THREE.DirectionalLight(0xffffff);
         var lvec = new THREE.Vector3(1, 1, 1).normalize();
         this.light.position.set(lvec.x, lvec.y, lvec.z);
         this.scene.add(this.light);
-
-        this.orbitControls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     }
-
-    public render = () => {
-        this.orbitControls.update();
-        this.renderer.render(this.scene, this.camera);
-
-        requestAnimationFrame(this.render);
-    }
-
 }
 
-window.onload = () => {
-    var threeJSTest = new ThreeJSTest();
-    threeJSTest.render();
-};
+const container = new ThreeJSContainer();
+
+const viewport = container.createRendererDOM();
+document.body.appendChild(viewport);

@@ -8,6 +8,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'app.js',
     },
+    resolve: {
+        extensions: ['.js', '.ts']
+    },
     module: {
         rules: [
             {
@@ -31,9 +34,7 @@ module.exports = {
         ],
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'src', 'index.html'),
-        })
+        new HtmlWebpackPlugin()
     ],
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'),
