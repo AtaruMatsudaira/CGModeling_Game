@@ -46,17 +46,30 @@
         },
         {
             "type": "npm",
-            "label": "npm: install",
+            "label": "npm: install local",
             "problemMatcher": [],
-            "dependsOn": [
-                "npm: link"
-            ],
             "script": "install"
         },
         {
             "type": "shell",
-            "label": "npm: link",
+            "label": "npm: install",
             "command": "npm link typescript ts-loader imports-loader raw-loader html-webpack-plugin",
+            "dependsOn": [
+                "rm -rf node_modules",
+                "npm: install local",
+            ],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "rm -rf node_modules",
+            "command": "echo rm-node_modules",
+            "osx": {
+                "command": "rm -rf node_modules",
+            },
+            "linux": {
+                "command": "rm -rf node_modules",
+            },
             "problemMatcher": [],
         }
     ]
