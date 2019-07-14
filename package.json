@@ -20,7 +20,14 @@
   "homepage": "https://github.com/tomoakimoriya/CGPRendering#readme",
   "dependencies": {
     "@types/three": "~0.93.0",
-    "three": "~0.93.0"
+    "three": "~0.93.0",
+    "dat.gui": "^0.7.2",
+    "@types/dat.gui": "^0.7.2",
+    "stats.js": "^0.17.0",
+    "@types/stats.js": "^0.17.0",
+    "@tweenjs/tween.js": "^17.2.0",
+    "@types/tween.js": "^17.2.0",
+    "physijs-webpack": "^0.1.2"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^5.0.3",
@@ -28,6 +35,7 @@
     "imports-loader": "^0.8.0",
     "raw-loader": "^3.0.0",
     "ts-loader": "^6.0.4",
+    "worker-loader": "^2.0.0",
     "typescript": "*",
     "webpack": "*",
     "webpack-cli": "^3.3.5",
