@@ -1,7 +1,10 @@
 import * as THREE from "three";
 import "three/examples/js/controls/OrbitControls";
+import * as dat from "dat.gui";
+import * as Stats from "stats.js";
+import * as TWEEN from "@tweenjs/tween.js";
+import * as Physijs from "physijs-webpack";
 
-declare function require(name:string);
 
 class ThreeJSContainer {
     private scene: THREE.Scene;
