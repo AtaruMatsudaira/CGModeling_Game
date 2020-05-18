@@ -9,31 +9,30 @@ import * as Physijs from "physijs-webpack";
 class ThreeJSContainer {
     private scene: THREE.Scene;
     private geometry: THREE.Geometry;
-    private material: THREE.MeshNormalMaterial;
+    private material: THREE.Material;
     private cube: THREE.Mesh;
     private light: THREE.Light;
-    private torus: THREE.Mesh;
-    private uniforms: THREE.Uniform[];
 
     constructor() {
         this.createScene();
     }
 
     // 画面部分の作成(表示する枠ごとに)
-    public createRendererDOM = (width = 640, height = 480, cameraPos = new THREE.Vector3(3, 3, 3)) => {
-        const renderer = new THREE.WebGLRenderer();
+    public createRendererDOM = (width: number, height: number, cameraPos: THREE.Vector3) => {
+        let renderer = new THREE.WebGLRenderer();
         renderer.setSize(width, height);
         renderer.setClearColor(new THREE.Color(0x495ed));
 
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        //カメラの設定
+        let camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         camera.position.copy(cameraPos);
         camera.lookAt(new THREE.Vector3(0,0,0));
 
         let orbitControls = new OrbitControls(camera, renderer.domElement);
 
         // 毎フレームのupdateを呼んで，render
-        // reqest... により次フレームを呼ぶ
-        const render = () => {
+        // reqestAnimationFrame により次フレームを呼ぶ
+        let render = () => {
             orbitControls.update();
 
             renderer.render(this.scene, camera);
@@ -50,30 +49,24 @@ class ThreeJSContainer {
     private createScene = () => {
         this.scene = new THREE.Scene();
 
-        this.geometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
+        this.geometry = new THREE.BoxGeometry(3, 3, 3);
+        this.material = new THREE.MeshLambertMaterial({ color: 0x55ff00 });
+        this.cube = new THREE.Mesh(this.geometry, this.material);
+        this.cube.position.y = 3;
+        this.cube.castShadow = true;
+        this.scene.add(this.cube);
 
-        // requireにより，サーバーサイド読み込み
-        const vert = <string>require("./vertex.vs");
-        const frag = <string>require("./fragment.fs");
-        this.uniforms = [];
-        this.material = new THREE.ShaderMaterial({
-            uniforms: this.uniforms,
-            vertexShader: vert,
-            fragmentShader: frag,
-        });
-
-        this.torus = new THREE.Mesh(this.geometry, this.material);
-        this.scene.add(this.torus);
+        //ライトの設定
         this.light = new THREE.DirectionalLight(0xffffff);
-        var lvec = new THREE.Vector3(1, 1, 1).normalize();
+        let lvec = new THREE.Vector3(1, 1, 1).normalize();
         this.light.position.set(lvec.x, lvec.y, lvec.z);
         this.scene.add(this.light);
 
 
         // 毎フレームのupdateを呼んで，更新
-        // reqest... により次フレームを呼ぶ
-        const update = () => {
-            this.torus.rotateX(0.01);
+        // reqestAnimationFrame により次フレームを呼ぶ
+        let update = () => {
+            this.cube.rotateX(0.01);
 
             requestAnimationFrame(update);
         }
@@ -81,7 +74,7 @@ class ThreeJSContainer {
     }
 }
 
-const container = new ThreeJSContainer();
+let container = new ThreeJSContainer();
 
-const viewport = container.createRendererDOM();
+let viewport = container.createRendererDOM(640, 480, new THREE.Vector3(-10, 10, 10));
 document.body.appendChild(viewport);

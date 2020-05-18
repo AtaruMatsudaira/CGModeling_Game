@@ -1,5 +1,5 @@
-# CGPRendering
-CG Rendering and Practice Program Template
+# CGModeling Template
+Modified from CG Rendering and Practice Program Template
 
 
 ## Installation
