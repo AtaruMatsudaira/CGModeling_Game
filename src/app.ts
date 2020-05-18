@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import "three/examples/js/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 import * as Stats from "stats.js";
 import * as TWEEN from "@tweenjs/tween.js";
@@ -29,7 +29,7 @@ class ThreeJSContainer {
         camera.position.copy(cameraPos);
         camera.lookAt(new THREE.Vector3(0,0,0));
 
-        const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+        let orbitControls = new OrbitControls(camera, renderer.domElement);
 
         // 毎フレームのupdateを呼んで，render
         // reqest... により次フレームを呼ぶ

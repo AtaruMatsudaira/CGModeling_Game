@@ -1,13 +1,17 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
+/**
+ * @type import('webpack').Configuration
+ */
 module.exports = {
     mode: 'development',
-    entry: path.resolve(__dirname, 'src', 'app.ts'),
+    entry: './src/app.ts',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'app.js',
+        chunkFilename: 'vendor.js',
     },
     resolve: {
         extensions: ['.js', '.ts']
@@ -19,13 +23,6 @@ module.exports = {
                 use: 'ts-loader',
             },
             {
-                test: /\.js$/,
-                include: [
-                    path.resolve(__dirname, 'node_modules/three/examples/js'),
-                ],
-                use: 'imports-loader?THREE=three',
-            },
-            {
                 test: /\.(vs|fs|txt)$/,
                 include: [
                     path.resolve(__dirname, "src"),
@@ -34,14 +31,27 @@ module.exports = {
             },
         ],
     },
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+        },
+    },
     plugins: [
         new HtmlWebpackPlugin(),
-        new CopyWebpackPlugin([
-            { from: '*.png', context: 'src' },
-            { from: '*.jpg', context: 'src' },
-            { from: '*.gif', context: 'src' },
-        ]),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: '**/*',
+                    context: 'src',
+                    globOptions: {
+                        ignore: ['*.ts', '*.js', '*.fs', '*.vs', '*.txt']
+                    },
+                    noErrorOnMissing: true
+                },
+            ],
+        }),
     ],
+    devtool: "inline-source-map",
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'),
         port: 8080,
