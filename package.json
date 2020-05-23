@@ -4,8 +4,9 @@
   "description": "Tokyo Denki University CG Rendering and Practice Program Template",
   "main": "app.js",
   "scripts": {
+    "prestart": "tsc threeVectorCloneTransformer.ts",
+    "prebuild": "tsc threeVectorCloneTransformer.ts",
     "start": "webpack-dev-server",
-    "testrun": "webpack -o .cache/app.js",
     "build": "webpack"
   },
   "repository": {

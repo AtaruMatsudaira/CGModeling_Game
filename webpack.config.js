@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const threeVectorCloneTransformerFactory = require('./threeVectorCloneTransformer').default;
 
 /**
  * @type import('webpack').Configuration
@@ -20,14 +21,19 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                use: 'ts-loader',
+                loader: 'ts-loader',
+                options: {
+                    getCustomTransformers: (program) => ({
+                        before: [threeVectorCloneTransformerFactory(program)]
+                    }),
+                }
             },
             {
                 test: /\.(vs|fs|txt)$/,
                 include: [
                     path.resolve(__dirname, "src"),
                 ],
-                use: 'raw-loader',
+                loader: 'raw-loader',
             },
         ],
     },
