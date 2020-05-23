@@ -46,8 +46,13 @@ module.exports = {
                     globOptions: {
                         ignore: ['*.ts', '*.js', '*.fs', '*.vs', '*.txt']
                     },
-                    noErrorOnMissing: true
+                    noErrorOnMissing: true,
                 },
+                {
+                    from: '**/*',
+                    context: 'assets',
+                    noErrorOnMissing: true,
+                }
             ],
         }),
     ],
