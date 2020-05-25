@@ -41,7 +41,7 @@
       "type": "shell",
       "label": "npm: install",
       "problemMatcher": [],
-      "command": "npm install"
+      "command": "npm install --loglevel error"
     }
   ]
 }
