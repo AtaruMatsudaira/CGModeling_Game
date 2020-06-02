@@ -4,5 +4,10 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"typescript.preferences.importModuleSpecifier": "relative",
+		"debug.chrome.useV3": false,
+		"debug.javascript.usePreview": false,
+		"typescript.tsdk": "./node_modules/typescript/lib",
+	}
 }
