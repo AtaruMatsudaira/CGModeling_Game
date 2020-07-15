@@ -50,7 +50,7 @@ module.exports = {
                     from: '**/*',
                     context: 'src',
                     globOptions: {
-                        ignore: ['*.ts', '*.js', '*.fs', '*.vs', '*.txt']
+                        ignore: ['**/*.ts', '**/*.js', '**/*.fs', '**/*.vs', '**/*.txt']
                     },
                     noErrorOnMissing: true,
                 },
