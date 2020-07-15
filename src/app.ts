@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
-import * as Stats from "stats.js";
-import * as TWEEN from "@tweenjs/tween.js";
 import * as Physijs from "physijs-webpack";
+import Stats from "stats.js";
+import TWEEN from "@tweenjs/tween.js";
 
 
 class ThreeJSContainer {
