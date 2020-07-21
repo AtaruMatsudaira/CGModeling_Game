@@ -32,13 +32,13 @@ class ThreeJSContainer {
 
         // 毎フレームのupdateを呼んで，render
         // reqestAnimationFrame により次フレームを呼ぶ
-        let render = () => {
+        let render: FrameRequestCallback = (time) => {
             orbitControls.update();
 
             renderer.render(this.scene, camera);
             requestAnimationFrame(render);
         }
-        render();
+        requestAnimationFrame(render);
 
         renderer.domElement.style.cssFloat = "left";
         renderer.domElement.style.margin = "10px";
@@ -65,12 +65,12 @@ class ThreeJSContainer {
 
         // 毎フレームのupdateを呼んで，更新
         // reqestAnimationFrame により次フレームを呼ぶ
-        let update = () => {
+        let update: FrameRequestCallback = (time) => {
             this.cube.rotateX(0.01);
 
             requestAnimationFrame(update);
         }
-        update();
+        requestAnimationFrame(update);
     }
 }
 
