@@ -37,14 +37,14 @@ class ThreeJSContainer {
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         let orbitControls = new OrbitControls(camera, renderer.domElement);
+        
+        this.scene.add(this.CreatePointItem());
 
         // 毎フレームのupdateを呼んで，render
         // reqestAnimationFrame により次フレームを呼ぶ
         let render: FrameRequestCallback = (time) => {
             renderer.render(this.scene, camera);
             requestAnimationFrame(render);
-            console.log("ねやーん");
-            this.tween.forEach((t) => t.update());
         };
         requestAnimationFrame(render);
 
@@ -59,37 +59,6 @@ class ThreeJSContainer {
         //両面映るMaterial
         this.material = new THREE.MeshNormalMaterial();
         this.material.side = THREE.DoubleSide;
-        this.createParticles();
-        this.tween = [];
-        let end_vertex = new THREE.TorusGeometry(100, 20, 50, 20).vertices;
-        for (let pIndex = 0; pIndex < 19; pIndex++) {
-            //スタート地点
-            let geom = <THREE.Geometry>this.cloud.geometry;
-            let vertices = geom.vertices;
-
-            let sqx = vertices[pIndex].x;
-            let sqy = vertices[pIndex].y;
-            let sqz = vertices[pIndex].z;
-            //ゴール地点
-            let shx = end_vertex[pIndex].x;
-            let shz = end_vertex[pIndex].y;
-            let shy = end_vertex[pIndex].z;
-
-            let tweeninfo = { x: sqx, y: sqy, z: sqz, index: pIndex };
-            let t = new TWEEN.Tween(tweeninfo)
-                .to({ x: shx, y: shy, z: shz }, 3000)
-                .onUpdate(() => {
-                    this.updateCloud(
-                        tweeninfo.index,
-                        tweeninfo.x,
-                        tweeninfo.y,
-                        tweeninfo.z
-                    );
-                });
-            this.tween.push(t);
-            t.start(2000);
-            t.repeat(2000);
-        }
 
         //ライトの設定
         this.light = new THREE.DirectionalLight(0xffffff);
@@ -97,39 +66,14 @@ class ThreeJSContainer {
         this.light.position.set(lvec.x, lvec.y, lvec.z);
         this.scene.add(this.light);
     };
-    private updateCloud = (index, x, y, z) => {
-        let geom = <THREE.Geometry>this.cloud.geometry;
-        geom.verticesNeedUpdate = true;
-        let vertices = geom.vertices;
-        vertices[index].x = x; // ここに注意
-        vertices[index].y = y; //
-        vertices[index].z = z;
-        geom.vertices = vertices;
-        this.cloud.geometry = geom;
+
+    private CreatePointItem = () => {
+        let geo = new THREE.SphereGeometry(10,2,10);
+        let material = new THREE.LineBasicMaterial({color:0xffffff});
+        let mesh = new THREE.Mesh(geo, material);
+        return mesh;
     };
-    /*
-    Particle生成用処理
-    */
-    private createParticles = () => {
-        this.cloud = this.createPoints(
-            new THREE.BoxGeometry(50, 50, 50, 10, 9, 8),
-            new THREE.Color(0x0000ff)
-        );
-        this.scene.add(this.cloud);
-    };
-    /*
-    Points生成用処理
-    */
-    private createPoints = (geom: THREE.Geometry, color: THREE.Color) => {
-        let material = new THREE.PointsMaterial({
-            color: color,
-            size: 3,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-        });
-        return new THREE.Points(geom, material);
-    };
+
 }
 let container = new ThreeJSContainer();
 
