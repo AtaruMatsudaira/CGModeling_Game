@@ -7,6 +7,52 @@ import * as Physijs from "physijs-webpack";
 import Stats from "stats.js";
 import TWEEN from "@tweenjs/tween.js";
 
+/*
+ Particle用クラス
+*/
+class ParticleObj {
+    public obj: THREE.Points;
+    public moveSpeed: THREE.Vector3;
+    private rotateSpeed: number;
+    public constructor(obj: THREE.Points, moveSpeed: THREE.Vector3) {
+        this.obj = obj;
+        this.moveSpeed = moveSpeed;
+        this.rotateSpeed = (Math.random() - 0.5) / 9.9;
+    }
+    public move() {
+        this.obj.position.x += this.moveSpeed.x;
+        this.obj.position.y += this.moveSpeed.y;
+        this.obj.position.z += this.moveSpeed.z;
+        this.obj.rotateZ(this.rotateSpeed);
+    }
+    public Clone(): ParticleObj {
+        return new ParticleObj(this.obj.clone(), this.moveSpeed);
+    }
+}
+/*
+Particleをグループで管理するクラス
+*/
+class TorusGroup {
+    public torusList: Array<ParticleObj>;
+
+    constructor() {
+        this.torusList = new Array<ParticleObj>();
+    }
+
+    public move() {
+        this.torusList.forEach((torus) => torus.move());
+    }
+    public Clone(): TorusGroup {
+        let group = new TorusGroup();
+        this.torusList.forEach((torus) => {
+            let newTorus = torus.Clone();
+            newTorus.obj.position.set(0, 0, 0);
+            group.torusList.push(newTorus);
+        });
+        return group;
+    }
+}
+
 class ThreeJSContainer {
     private scene: THREE.Scene;
     private light: THREE.Light;
@@ -15,8 +61,8 @@ class ThreeJSContainer {
     private material: THREE.Material;
     cloud: THREE.Points;
     pvelocity: THREE.Vector3[];
-    tween: any[];
-    geom: THREE.BoxGeometry;
+    firstGroup: TorusGroup;
+    otherGroups: TorusGroup[] = [];
     constructor() {
         this.createScene();
     }
@@ -41,10 +87,26 @@ class ThreeJSContainer {
         // 毎フレームのupdateを呼んで，render
         // reqestAnimationFrame により次フレームを呼ぶ
         let render: FrameRequestCallback = (time) => {
+            
+            //それぞれ動かしている
+            this.firstGroup.move();
+            this.otherGroups.forEach((group) => group.move());
+
+            //300フレームごとに新しいオブジェクトを生成している
+            if (this.frame % 300 == 0) {
+                let newGroup = this.firstGroup.Clone();
+                this.otherGroups.push(newGroup);
+                newGroup.torusList.forEach((group) => {
+                    this.scene.add(group.obj);
+                });
+            }
+            this.frame++;
+            orbitControls.update();
+
             renderer.render(this.scene, camera);
+
+          
             requestAnimationFrame(render);
-            console.log("ねやーん");
-            this.tween.forEach((t) => t.update());
         };
         requestAnimationFrame(render);
 
@@ -59,37 +121,8 @@ class ThreeJSContainer {
         //両面映るMaterial
         this.material = new THREE.MeshNormalMaterial();
         this.material.side = THREE.DoubleSide;
+
         this.createParticles();
-        this.tween = [];
-        let end_vertex = new THREE.TorusGeometry(100, 20, 50, 20).vertices;
-        for (let pIndex = 0; pIndex < 19; pIndex++) {
-            //スタート地点
-            let geom = <THREE.Geometry>this.cloud.geometry;
-            let vertices = geom.vertices;
-
-            let sqx = vertices[pIndex].x;
-            let sqy = vertices[pIndex].y;
-            let sqz = vertices[pIndex].z;
-            //ゴール地点
-            let shx = end_vertex[pIndex].x;
-            let shz = end_vertex[pIndex].y;
-            let shy = end_vertex[pIndex].z;
-
-            let tweeninfo = { x: sqx, y: sqy, z: sqz, index: pIndex };
-            let t = new TWEEN.Tween(tweeninfo)
-                .to({ x: shx, y: shy, z: shz }, 3000)
-                .onUpdate(() => {
-                    this.updateCloud(
-                        tweeninfo.index,
-                        tweeninfo.x,
-                        tweeninfo.y,
-                        tweeninfo.z
-                    );
-                });
-            this.tween.push(t);
-            t.start(2000);
-            t.repeat(2000);
-        }
 
         //ライトの設定
         this.light = new THREE.DirectionalLight(0xffffff);
@@ -97,25 +130,27 @@ class ThreeJSContainer {
         this.light.position.set(lvec.x, lvec.y, lvec.z);
         this.scene.add(this.light);
     };
-    private updateCloud = (index, x, y, z) => {
-        let geom = <THREE.Geometry>this.cloud.geometry;
-        geom.verticesNeedUpdate = true;
-        let vertices = geom.vertices;
-        vertices[index].x = x; // ここに注意
-        vertices[index].y = y; //
-        vertices[index].z = z;
-        geom.vertices = vertices;
-        this.cloud.geometry = geom;
-    };
+
     /*
     Particle生成用処理
     */
     private createParticles = () => {
-        this.cloud = this.createPoints(
-            new THREE.BoxGeometry(50, 50, 50, 10, 9, 8),
-            new THREE.Color(0x0000ff)
-        );
-        this.scene.add(this.cloud);
+        let colors = [
+            new THREE.Color(0x0000ff),
+            new THREE.Color(0x00ff00),
+            new THREE.Color(0xff0000),
+        ];
+        this.firstGroup = new TorusGroup();
+        colors.forEach((color) => {
+            let points = this.createPoints(
+                new THREE.TorusGeometry(50, 5, 10, 10),
+                color
+            );
+            this.firstGroup.torusList.push(
+                new ParticleObj(points, new THREE.Vector3(0, 0, 0.1))
+            );
+            this.scene.add(points);
+        });
     };
     /*
     Points生成用処理
